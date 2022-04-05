@@ -1,0 +1,15 @@
+server:
+  port: 8080
+  servlet:
+    context-path: /api/v1
+spring:
+  flyway:
+    enabled: true
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username : postgres
+    password : admin
+    url : jdbc:postgresql://localhost:5432/postgres
+  application:
+    name: UserService
+
