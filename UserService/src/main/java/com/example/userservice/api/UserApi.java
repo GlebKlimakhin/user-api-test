@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/users")
@@ -28,14 +27,14 @@ public class UserApi {
 
     @GetMapping("/")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<UserDto> findAll() {
-        return userService.findAll().stream().map(u -> new UserDto).collect(Collectors.toList());
+        return userService.findAll();
     }
 
     @GetMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
-    public User findUserById(@PathVariable long id) {
+    public UserDto findUserById(@PathVariable long id) {
         return userService.findUserById(id);
     }
 
@@ -46,8 +45,9 @@ public class UserApi {
         return ResponseEntity.created(location).body(userService.createUser(user));
     }
 
-    @PutMapping("/info")
+    @PutMapping("/info/")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void updateUserInfo(@RequestBody UpdateUserInfoRequestDto dto) {
         userService.updateUserInfo(dto);
     }
@@ -60,6 +60,7 @@ public class UserApi {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.OK)
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void deleteUserById(@PathVariable Long id) {
         userService.deleteUserById(id);
     }

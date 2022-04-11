@@ -1,8 +1,6 @@
 package com.example.userservice.model;
 
-import lombok.AccessLevel;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
@@ -11,7 +9,9 @@ import java.util.List;
 @Entity
 @Table(name = "users")
 @NoArgsConstructor
+@AllArgsConstructor
 @Data
+@EqualsAndHashCode
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class User {
 
@@ -31,5 +31,12 @@ public class User {
                joinColumns = @JoinColumn(name = "user_id"),
                inverseJoinColumns = @JoinColumn(name = "role_id"))
     List<Role> roles;
+
+    public User(Long id, String username, String password) {
+        this.id = id;
+        this.username = username;
+        this.password = password;
+    }
+
 
 }

@@ -4,22 +4,30 @@ import com.example.adminservice.dto.TokenResponse;
 import com.example.adminservice.dto.UserDto;
 import org.apache.el.parser.Token;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.*;
 import org.springframework.http.client.support.BasicAuthenticationInterceptor;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @Service
 public class AdminService {
 
     @Autowired
     private RestTemplate restTemplate;
+//
+//    @Autowired
+//    private BCryptPasswordEncoder encoder;
+
+    @Bean
+    public BCryptPasswordEncoder passwordEncoder() {
+        return new BCryptPasswordEncoder();
+    }
 
     public TokenResponse getAuthToken(String username, String password) {
         HttpHeaders headers = new HttpHeaders();
@@ -39,20 +47,18 @@ public class AdminService {
             throw new RuntimeException();
         }
         return tokenResponse.getBody();
-        //вытаскиваем токен, получаем авторизацию, тут ещё пароль добавим в exchange
-                            //в методах апи передаём хэдер в запрос)
-                            //profit!
     }
 
     public List<UserDto> getUsersList(String authorization) {
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Authorization", authorization);
-        HttpEntity<List<UserDto>> httpEntity = new HttpEntity<>(headers);
-        restTemplate.exchange("http://localhost:8080/api/v1/users/",
+        headers.add("Authorization", "Bearer " + authorization);
+        HttpEntity<String> httpEntity = new HttpEntity<>(headers);
+        ResponseEntity<List> response = restTemplate.exchange("http://localhost:8080/api/v1/users/",
                 HttpMethod.GET,
                 httpEntity,
                 List.class);
-        return httpEntity.getBody();
+        List<UserDto> users = response.getBody();
+        return response.getBody();
     }
 
 }
